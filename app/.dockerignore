@@ -1,0 +1,21 @@
+# Ignore node modules and local development tools
+node_modules/
+dist/
+.git/
+.gitignore
+package.json
+package-lock.json
+tsconfig.json
+vite.config.ts
+src/
+.env
+.env.example
+*.md
+metadata.json
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.vscode/
+.idea/

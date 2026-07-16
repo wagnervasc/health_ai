@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictor de Hábitos e Estilo de Vida Saudável</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .heading-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden">
+    <!-- Ambient Blur Background -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="relative border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white heading-font flex items-center gap-2">
+                        Predictor de Estilo de Vida Saudável
+                        <span class="text-xs font-normal px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400">GCP FastAPI</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Predição de vida saudável baseada em hábitos individuais e ingestão calórica</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 p-1.5 rounded-lg text-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-1"></span>
+                <span class="text-slate-400">API Status:</span>
+                <span class="text-emerald-400 font-mono font-semibold">Online</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative max-w-7xl mx-auto px-4 mt-8 pb-16">
+        <!-- Preset Examples Card -->
+        <div class="mb-6 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h3 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    Carregar Cenários de Exemplo
+                </h3>
+                <p class="text-xs text-slate-400">Preencha o formulário instantaneamente com perfis predefinidos</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="loadPreset('healthy')" class="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-xs font-medium text-emerald-400 transition-all">Perfil Saudável</button>
+                <button onclick="loadPreset('unhealthy')" class="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/40 rounded-xl text-xs font-medium text-amber-400 transition-all">Perfil Não Saudável</button>
+                <button onclick="loadPreset('vegan')" class="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20 hover:border-teal-500/40 rounded-xl text-xs font-medium text-teal-400 transition-all">Perfil Vegano</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Form Card - 5 cols -->
+            <section class="lg:col-span-5">
+                <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 backdrop-blur-md">
+                    <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2 pb-3 border-b border-slate-800">
+                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        Dados do Estilo de Vida
+                    </h2>
+
+                    <form id="predictionForm" onsubmit="submitPrediction(event)" class="space-y-5">
+                        <!-- Age and Gender -->
+                        <div class="grid grid-cols-2 gap-4">
+                          <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-2">Idade (anos)</label>
+                            <input type="number" id="age" required min="18" max="80" value="30" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all">
+                          </div>
+                          <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-2">Gênero</label>
+                            <select id="gender" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all">
+                              <option value="Male">Masculino</option>
+                              <option value="Female">Feminino</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <!-- Weight (kg) -->
+                        <div>
+                          <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-semibold text-slate-400">Peso Corporal (kg)</label>
+                            <span id="weightVal" class="text-xs font-mono text-emerald-400">70 kg</span>
+                          </div>
+                          <input type="range" id="weight" min="40" max="150" step="0.5" value="70" oninput="updateRangeLabel('weight', 'weightVal', ' kg')" class="w-full accent-emerald-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <!-- Diet Type -->
+                        <div>
+                          <label class="block text-xs font-semibold text-slate-400 mb-2">Tipo de Dieta Alimentar</label>
+                          <select id="dietType" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all">
+                            <option value="Balanced">Equilibrada (Balanced)</option>
+                            <option value="Low-Carb">Baixo Carboidrato (Low-Carb)</option>
+                            <option value="Vegan">Vegana (Vegan)</option>
+                            <option value="High-Calorie">Hipercalórica (High-Calorie)</option>
+                          </select>
+                        </div>
+
+                        <!-- Physical Activity Level -->
+                        <div>
+                          <label class="block text-xs font-semibold text-slate-400 mb-2">Nível de Atividade Física</label>
+                          <select id="physicalActivityLevel" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all">
+                            <option value="Sedentary">Sedentário (Sedentary)</option>
+                            <option value="Moderate">Moderado (Moderate)</option>
+                            <option value="Active">Ativo (Active)</option>
+                          </select>
+                        </div>
+
+                        <!-- Calories Intake -->
+                        <div>
+                          <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-semibold text-slate-400">Consumo Diário de Calorias (kcal)</label>
+                            <span id="caloriesIntakeVal" class="text-xs font-mono text-emerald-400">2200 kcal</span>
+                          </div>
+                          <input type="range" id="caloriesIntake" min="1200" max="4500" step="50" value="2200" oninput="updateRangeLabel('caloriesIntake', 'caloriesIntakeVal', ' kcal')" class="w-full accent-emerald-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <!-- Calories Difference -->
+                        <div>
+                          <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-semibold text-slate-400">Diferença Calórica (Consumo vs Gasto)</label>
+                            <span id="caloriesDifferenceVal" class="text-xs font-mono text-slate-400">0 kcal</span>
+                          </div>
+                          <input type="range" id="caloriesDifference" min="-1000" max="1500" step="50" value="0" oninput="updateRangeLabel('caloriesDifference', 'caloriesDifferenceVal', ' kcal', true)" class="w-full accent-emerald-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <!-- Error Box -->
+                        <div id="errorBox" class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-400 hidden flex items-start gap-2">
+                            <span class="font-bold">Erro:</span>
+                            <span id="errorMsg"></span>
+                        </div>
+
+                        <!-- Form Buttons -->
+                        <div class="flex gap-3 pt-2">
+                          <button type="button" onclick="resetForm()" class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all">Limpar</button>
+                          <button type="submit" id="submitBtn" class="flex-1 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/20">
+                            Analisar Hábito de Vida
+                          </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Results Card - 7 cols -->
+            <section class="lg:col-span-7 flex flex-col">
+                <div class="flex-1 bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 backdrop-blur-md flex flex-col justify-between min-h-[400px]">
+                    
+                    <!-- IDLE State -->
+                    <div id="resultIdle" class="flex-1 flex flex-col items-center justify-center text-center py-16">
+                        <div class="p-4 bg-slate-900 border border-slate-800/60 rounded-full mb-5 text-slate-500">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-200 mb-2">Aguardando análise de dados</h3>
+                        <p class="text-xs text-slate-400 max-w-sm leading-relaxed">Preencha o formulário e clique em "Analisar Hábito de Vida" para ver a classificação do modelo e recomendações.</p>
+                    </div>
+
+                    <!-- LOADING State -->
+                    <div id="resultLoading" class="flex-1 flex-col items-center justify-center text-center py-16 hidden">
+                        <div class="relative mb-8">
+                          <div class="w-12 h-12 rounded-full border-t-2 border-r-2 border-emerald-500 animate-spin mx-auto"></div>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Processando pipeline do modelo...</h3>
+                        <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2 text-xs text-emerald-400 font-mono inline-block">
+                            Carregando pesos e efetuando inferência...
+                        </div>
+                    </div>
+
+                    <!-- RESULT State -->
+                    <div id="resultPanel" class="space-y-6 hidden">
+                        <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+                          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Laudo de Classificação do Modelo</h2>
+                          <span id="scoreBadge" class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/10">Score 70</span>
+                        </div>
+
+                        <!-- Result Card -->
+                        <div id="resultCard" class="p-6 rounded-2xl border flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="flex items-center gap-4">
+                                <div id="resultIconContainer" class="p-4 rounded-xl">
+                                    <!-- Dynamic Icon -->
+                                </div>
+                                <div>
+                                    <div class="text-[10px] uppercase tracking-wider font-bold opacity-80 mb-1">Classificação Final</div>
+                                    <h3 id="predictionText" class="text-xl font-black text-white leading-tight">Vida Saudável</h3>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl px-5 py-3 text-center min-w-[130px]">
+                                <div class="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Confiança</div>
+                                <div id="confidenceVal" class="text-2xl font-black text-white font-mono">92.5%</div>
+                                <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                  <div id="confidenceBar" class="h-full rounded-full bg-emerald-500" style="width: 92.5%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Suggestions/Clinics -->
+                        <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-5">
+                            <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 mb-3 uppercase tracking-wider">
+                                Recomendações de Hábitos Clínicos
+                            </h4>
+                            <ul class="text-xs text-slate-300 leading-relaxed space-y-2 pl-4 list-disc">
+                                <li><strong>Alimentação:</strong> Mantenha uma proporção balanceada de macronutrientes correspondente ao seu nível de atividade física.</li>
+                                <li><strong>Atividade Física:</strong> Realize preferencialmente exercícios de força combinados a exercícios cardiovasculares periódicos.</li>
+                                <li><strong>Equilíbrio Hidroeletrolítico:</strong> Consuma entre 35ml a 40ml de água por quilo de peso corporal por dia.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Medical Disclaimer -->
+                    <div class="mt-8 pt-4 border-t border-slate-800/60 text-[10px] text-slate-500 flex items-start gap-2">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-slate-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="leading-relaxed">
+                            <strong>Aviso Importante:</strong> Esta ferramenta fornece simulações estatísticas baseadas em inteligência artificial e modelos de machine learning. Os pareceres e classificações não substituem diagnósticos clínicos, exames médicos ou avaliações individualizadas com endocrinologistas ou nutricionistas.
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function updateRangeLabel(id, labelId, suffix, isSigned = false) {
+            const input = document.getElementById(id);
+            const label = document.getElementById(labelId);
+            let val = input.value;
+            if (isSigned && parseFloat(val) > 0) {
+                val = "+" + val;
+            }
+            label.innerText = val + suffix;
+        }
+
+        function loadPreset(preset) {
+            if (preset === 'healthy') {
+                document.getElementById('age').value = 28;
+                document.getElementById('gender').value = 'Female';
+                document.getElementById('weight').value = 62;
+                document.getElementById('dietType').value = 'Balanced';
+                document.getElementById('physicalActivityLevel').value = 'Active';
+                document.getElementById('caloriesIntake').value = 2000;
+                document.getElementById('caloriesDifference').value = -100;
+            } else if (preset === 'unhealthy') {
+                document.getElementById('age').value = 45;
+                document.getElementById('gender').value = 'Male';
+                document.getElementById('weight').value = 98;
+                document.getElementById('dietType').value = 'High-Calorie';
+                document.getElementById('physicalActivityLevel').value = 'Sedentary';
+                document.getElementById('caloriesIntake').value = 3400;
+                document.getElementById('caloriesDifference').value = 800;
+            } else if (preset === 'vegan') {
+                document.getElementById('age').value = 35;
+                document.getElementById('gender').value = 'Female';
+                document.getElementById('weight').value = 58;
+                document.getElementById('dietType').value = 'Vegan';
+                document.getElementById('physicalActivityLevel').value = 'Moderate';
+                document.getElementById('caloriesIntake').value = 1800;
+                document.getElementById('caloriesDifference').value = -200;
+            }
+            
+            // Trigger UI updates
+            updateRangeLabel('weight', 'weightVal', ' kg');
+            updateRangeLabel('caloriesIntake', 'caloriesIntakeVal', ' kcal');
+            updateRangeLabel('caloriesDifference', 'caloriesDifferenceVal', ' kcal', true);
+        }
+
+        function resetForm() {
+            document.getElementById('predictionForm').reset();
+            updateRangeLabel('weight', 'weightVal', ' kg');
+            updateRangeLabel('caloriesIntake', 'caloriesIntakeVal', ' kcal');
+            updateRangeLabel('caloriesDifference', 'caloriesDifferenceVal', ' kcal', true);
+            
+            document.getElementById('resultIdle').classList.remove('hidden');
+            document.getElementById('resultLoading').classList.add('hidden');
+            document.getElementById('resultPanel').classList.add('hidden');
+            document.getElementById('errorBox').classList.add('hidden');
+        }
+
+        async function submitPrediction(e) {
+            e.preventDefault();
+            
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const dietType = document.getElementById('dietType').value;
+            const physicalActivityLevel = document.getElementById('physicalActivityLevel').value;
+            const caloriesIntake = parseFloat(document.getElementById('caloriesIntake').value);
+            const caloriesDifference = parseFloat(document.getElementById('caloriesDifference').value);
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorBox = document.getElementById('errorBox');
+            
+            errorBox.classList.add('hidden');
+            document.getElementById('resultIdle').classList.add('hidden');
+            document.getElementById('resultPanel').classList.add('hidden');
+            document.getElementById('resultLoading').classList.remove('hidden');
+            
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Age: age,
+                        Gender: gender,
+                        Weight: weight,
+                        Calories_Intake: caloriesIntake,
+                        Calories_Difference: caloriesDifference,
+                        Physical_Activity_Level: physicalActivityLevel,
+                        Diet_Type: dietType
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errObj = await response.json();
+                    throw new Error(errObj.error || "Erro na predição");
+                }
+                
+                const result = await response.json();
+                
+                // Update prediction outputs
+                document.getElementById('predictionText').innerText = result.prediction;
+                document.getElementById('confidenceVal').innerText = result.confidence + '%';
+                document.getElementById('confidenceBar').style.width = result.confidence + '%';
+                document.getElementById('scoreBadge').innerText = 'Score ' + result.score;
+                
+                const card = document.getElementById('resultCard');
+                const iconContainer = document.getElementById('resultIconContainer');
+                
+                if (result.isHealthy) {
+                    card.className = "p-6 rounded-2xl border bg-emerald-500/10 border-emerald-500/30 text-emerald-400 flex flex-col md:flex-row justify-between items-center gap-4";
+                    iconContainer.className = "p-4 rounded-xl bg-emerald-500/15";
+                    iconContainer.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                    document.getElementById('confidenceBar').className = "h-full rounded-full bg-emerald-500";
+                } else {
+                    card.className = "p-6 rounded-2xl border bg-amber-500/10 border-amber-500/30 text-amber-400 flex flex-col md:flex-row justify-between items-center gap-4";
+                    iconContainer.className = "p-4 rounded-xl bg-amber-500/15";
+                    iconContainer.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+                    document.getElementById('confidenceBar').className = "h-full rounded-full bg-amber-500";
+                }
+                
+                document.getElementById('resultPanel').classList.remove('hidden');
+            } catch (err) {
+                document.getElementById('errorMsg').innerText = err.message;
+                errorBox.classList.remove('hidden');
+                document.getElementById('resultIdle').classList.remove('hidden');
+            } finally {
+                document.getElementById('resultLoading').classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

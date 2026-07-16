@@ -1,0 +1,6 @@
+{
+  "name": "Health Lifestyle Predictor",
+  "description": "An AI-powered wellness dashboard and healthy lifestyle predictor based on calorie intake and physical activity.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
